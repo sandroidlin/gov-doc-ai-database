@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>米花市教育局公文建檔</title>
+<title>米花市教育局AI公文資料庫</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Figtree:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -18,32 +18,45 @@
     library's spirit, rebuilt in plain CSS: no React/build step, this stays
     a single file you just open.
   */
+  /* Dark theme, following Vibe's own dark palette: deep navy surfaces, the
+     same #0073ea brand blue for filled controls, and every tinted "selected"
+     background darkened so its lighter foreground text still reads.
+     --v-primary-text / --v-ai are the foreground shades for text on the dark
+     surfaces; the *-solid values are for filled buttons with white text. */
   :root{
+    color-scheme:dark;
     --v-primary:#0073ea;
-    --v-primary-hover:#0060b9;
-    --v-primary-selected:#cce5ff;
-    --v-primary-selected-hover:#aed4fc;
-    --v-primary-surface:#eceff8;
-    --v-primary-highlight:#f0f7ff;
-    --v-text:#323338;
-    --v-text-secondary:#676879;
-    --v-border:#c3c6d4;
-    --v-border-layout:#d0d4e4;
-    --v-bg:#ffffff;
-    --v-bg-grey:#f6f7fb;
-    --v-bg-disabled:#ecedf5;
-    --v-negative:#d83a52;
-    --v-negative-selected:#f4c3cb;
-    --v-positive:#00854d;
-    --v-positive-selected:#bbdbc9;
-    --v-warning-text:#8a6d00;
-    --v-warning-selected:#fceba1;
-    --v-indigo:#5559df;
-    --v-indigo-selected:#aaacef;
-    --v-link:#1f76c2;
-    --v-shadow-xs:0 4px 6px -4px rgba(0,0,0,.12);
-    --v-shadow-sm:0 4px 8px rgba(0,0,0,.16);
-    --v-shadow-md:0 6px 20px rgba(0,0,0,.18);
+    --v-primary-hover:#1a82f0;
+    --v-primary-text:#4da3ff;
+    --v-primary-selected:#133774;
+    --v-primary-selected-hover:#1a4690;
+    --v-primary-surface:#242a4f;
+    --v-primary-highlight:#1c2550;
+    --v-text:#d5d8df;
+    --v-text-secondary:#9699a6;
+    --v-border:#565a78;
+    --v-border-layout:#363a5c;
+    --v-bg:#1f2242;
+    --v-bg-grey:#181b34;
+    --v-bg-disabled:#30334f;
+    --v-negative:#f26d80;
+    --v-negative-selected:#4d1f2c;
+    --v-positive:#3fcf8e;
+    --v-positive-selected:#173f2e;
+    --v-warning-text:#f5cf55;
+    --v-warning-selected:#4a3c10;
+    --v-indigo:#a8abff;
+    --v-indigo-selected:#2f3175;
+    --v-link:#5aa9ff;
+    --v-ai:#b58cf6;
+    --v-ai-solid:#7b3fd1;
+    --v-ai-solid-hover:#8b52e0;
+    --v-ai-surface:#2a2452;
+    --v-ai-selected:#3f3175;
+    --v-overlay:rgba(8,10,24,.7);
+    --v-shadow-xs:0 4px 6px -4px rgba(0,0,0,.45);
+    --v-shadow-sm:0 4px 8px rgba(0,0,0,.5);
+    --v-shadow-md:0 8px 28px rgba(0,0,0,.6);
     --v-radius-sm:4px;
     --v-radius-md:8px;
     --v-radius-lg:16px;
@@ -53,6 +66,7 @@
     --v-mono:"SFMono-Regular",ui-monospace,Menlo,Consolas,monospace;
   }
   *{box-sizing:border-box;}
+  [hidden]{display:none !important;}
   html,body{margin:0;padding:0;}
   body{
     background:var(--v-bg-grey);
@@ -75,13 +89,8 @@
     font-family:var(--v-font-title); font-size:1.5rem; margin:0; font-weight:600; letter-spacing:-.01em;
     color:var(--v-text); transition:font-size .15s;
   }
-  header h1 span{color:var(--v-primary);}
-  header p{
-    margin:4px 0 0; color:var(--v-text-secondary); font-size:.78rem; max-width:520px;
-    overflow:hidden; max-height:40px; opacity:1; transition:max-height .15s, opacity .15s, margin .15s;
-  }
+  header h1 span{color:var(--v-primary-text);}
   header.scrolled h1{ font-size:1.1rem; }
-  header.scrolled p{ max-height:0; opacity:0; margin-top:0; }
   .stats{font-size:.8rem; color:var(--v-text-secondary); display:flex; align-items:center; gap:14px; flex-wrap:wrap;}
   .stats b{color:var(--v-text); font-size:1.15rem; font-family:var(--v-font-title); font-weight:600;}
 
@@ -119,7 +128,7 @@
   }
   .filter-summary .fs-chip{
     max-width:320px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
-    background:var(--v-primary-selected); color:var(--v-primary-hover); font-weight:600;
+    background:var(--v-primary-selected); color:var(--v-primary-text); font-weight:600;
     padding:2px 9px; border-radius:12px; line-height:1.6;
   }
   .filter-summary .fs-count{ margin-left:auto; white-space:nowrap; }
@@ -127,11 +136,8 @@
     font-size:.78rem; color:var(--v-text-secondary); white-space:nowrap;
   }
 
-  .filters{
-    display:flex; flex-direction:column; gap:10px; margin-bottom:20px;
-  }
   .filters-search{
-    width:100%; padding:9px 14px; border:1px solid var(--v-border); border-radius:var(--v-radius-sm);
+    width:100%; height:var(--filter-h); padding:9px 14px; border:1px solid var(--v-border); border-radius:var(--v-radius-sm);
     background:var(--v-bg); color:var(--v-text); font-family:inherit; font-size:.88rem;
     transition:border-color .1s, box-shadow .1s;
   }
@@ -150,7 +156,7 @@
   .multiselect-btn .chevron{ width:12px; height:12px; flex:none; transition:transform .15s; }
   .multiselect.open .multiselect-btn .chevron{ transform:rotate(180deg); }
   .multiselect-btn:hover{ border-color:var(--v-primary); background:var(--v-primary-highlight); }
-  .multiselect-btn.has-selection{ border-color:var(--v-primary); color:var(--v-primary); background:var(--v-primary-highlight); font-weight:600; }
+  .multiselect-btn.has-selection{ border-color:var(--v-primary); color:var(--v-primary-text); background:var(--v-primary-highlight); font-weight:600; }
   .multiselect-panel{
     position:absolute; top:calc(100% + 4px); left:0; z-index:20; min-width:240px; max-width:320px;
     max-height:280px; overflow-y:auto; background:var(--v-bg); border:1px solid var(--v-border);
@@ -171,7 +177,7 @@
     display:flex; justify-content:space-between; padding:4px 6px 8px; border-bottom:1px solid var(--v-border-layout); margin-bottom:6px;
   }
   .multiselect-panel .ms-actions button{
-    font-family:inherit; font-size:.72rem; font-weight:600; color:var(--v-primary); background:none; border:none; cursor:pointer; padding:0;
+    font-family:inherit; font-size:.72rem; font-weight:600; color:var(--v-primary-text); background:none; border:none; cursor:pointer; padding:0;
   }
 
   .date-range{ display:flex; align-items:center; gap:6px; font-size:.8rem; color:var(--v-text-secondary); flex-wrap:wrap; }
@@ -182,13 +188,129 @@
   }
   .date-range input[type=date]:focus{ outline:none; border-color:var(--v-primary); box-shadow:0 0 0 2px var(--v-primary-selected); }
 
+  /* --- search area: 人工篩選 / AI 搜尋 toggle + the active way of searching - */
+  .search-area{ margin-bottom:12px; }
+  .search-area-head{ display:flex; align-items:center; gap:14px; flex-wrap:wrap; margin-bottom:14px; }
+  .search-area-hint{ font-size:.8rem; color:var(--v-text-secondary); }
+  #manualPane{ display:flex; flex-direction:column; gap:10px; }
+
+  .mode-toggle{
+    display:inline-flex; gap:4px; padding:4px;
+    background:var(--v-bg-grey); border:1px solid #fff; border-radius:10px;
+  }
+  .mode-toggle button{
+    display:inline-flex; align-items:center; gap:7px;
+    font-family:inherit; font-size:.9rem; font-weight:600; color:var(--v-text-secondary);
+    background:transparent; border:none; padding:8px 18px; border-radius:7px; cursor:pointer;
+    transition:background .15s, color .15s, box-shadow .15s;
+  }
+  .mode-toggle button svg{ width:15px; height:15px; flex:none; }
+  .mode-toggle button:hover{ color:var(--v-text); background:var(--v-bg); }
+  .mode-toggle button[data-mode="manual"][aria-selected="true"]{
+    background:var(--v-primary); color:#fff; box-shadow:0 2px 6px rgba(0,115,234,.35);
+  }
+  .mode-toggle button[data-mode="ai"][aria-selected="true"]{
+    background:var(--v-ai-solid); color:#fff; box-shadow:0 2px 6px rgba(123,63,209,.35);
+  }
+
+  /* --- AI 搜尋 pane: conversation, summary, keywords ------------------------ */
+  /* Sits bare on the page like the manual filters do, so switching modes
+     swaps one set of controls for another rather than adding a box. */
+  .ai-panel{ display:flex; flex-direction:column; gap:10px; }
+  .ai-thread{
+    max-height:46vh; overflow-y:auto; padding:6px 2px 6px 0;
+    display:flex; flex-direction:column; gap:14px;
+  }
+  /* Same --filter-h rows as the manual pane (search box, then filter row),
+     so before the first question both modes are exactly the same height
+     and switching between them doesn't move the list below. */
+  .ai-examples{ display:flex; flex-wrap:wrap; align-items:center; gap:8px; min-height:var(--filter-h); }
+  .ai-examples-label{ font-size:.78rem; color:var(--v-text-secondary); white-space:nowrap; }
+  .ai-example{
+    font-family:inherit; font-size:.8rem; color:var(--v-text); background:var(--v-bg);
+    border:1px solid var(--v-border); border-radius:16px; padding:5px 13px; cursor:pointer;
+    transition:border-color .1s, background .1s, color .1s;
+  }
+  .ai-example:hover{ border-color:var(--v-ai); color:var(--v-ai); background:var(--v-ai-surface); }
+
+  .ai-msg-user{ display:flex; justify-content:flex-end; }
+  .ai-msg-user .ai-bubble{
+    max-width:70%; background:var(--v-primary-selected); color:var(--v-text);
+    padding:8px 13px; border-radius:14px 14px 3px 14px; font-size:.88rem; line-height:1.55; word-break:break-word;
+  }
+  .ai-msg-bot{ display:flex; gap:10px; align-items:flex-start; }
+  .ai-msg-bot.is-past{ opacity:.62; }
+  .ai-avatar{
+    width:28px; height:28px; border-radius:50%; flex:none;
+    display:flex; align-items:center; justify-content:center;
+    background:var(--v-ai-surface); color:var(--v-ai);
+  }
+  .ai-avatar svg{ width:15px; height:15px; }
+  .ai-card{ flex:1; min-width:0; padding-top:3px; }
+  .ai-card-head{ display:flex; align-items:center; gap:6px; font-size:.72rem; font-weight:600; color:var(--v-ai); margin-bottom:3px; }
+  .ai-badge{ font-size:.66rem; font-weight:600; color:var(--v-text-secondary); background:var(--v-bg-disabled); padding:1px 7px; border-radius:10px; }
+  .ai-summary{ margin:0; font-size:.88rem; line-height:1.75; }
+  .ai-error{ margin:0; font-size:.85rem; color:var(--v-negative); }
+  .ai-loading{ display:inline-flex; align-items:center; gap:8px; font-size:.84rem; color:var(--v-text-secondary); }
+  .ai-dots{ display:inline-flex; gap:3px; }
+  .ai-dots i{ width:5px; height:5px; border-radius:50%; background:var(--v-ai); opacity:.3; animation:aiDot 1s infinite ease-in-out; }
+  .ai-dots i:nth-child(2){ animation-delay:.15s; }
+  .ai-dots i:nth-child(3){ animation-delay:.3s; }
+  @keyframes aiDot{ 0%,80%,100%{ opacity:.25; transform:translateY(0);} 40%{ opacity:1; transform:translateY(-2px);} }
+
+  .ai-kw-block{ margin-top:12px; }
+  .ai-kw-label{ font-size:.74rem; color:var(--v-text-secondary); margin-bottom:6px; }
+  .ai-kw-list{ display:flex; flex-wrap:wrap; gap:6px; }
+  .ai-kw{
+    display:inline-flex; align-items:stretch; border:1px solid var(--v-ai-selected); border-radius:14px;
+    overflow:hidden; background:var(--v-ai-surface);
+  }
+  .ai-kw button{ font-family:inherit; border:none; background:none; color:var(--v-ai); cursor:pointer; transition:background .1s; }
+  .ai-kw button:hover{ background:var(--v-ai-selected); }
+  .ai-kw-main{ font-size:.8rem; font-weight:600; padding:3px 8px 3px 12px; }
+  .ai-kw-side{ display:inline-flex; align-items:center; padding:0 8px; border-left:1px solid var(--v-ai-selected) !important; }
+  .ai-kw-side svg{ width:12px; height:12px; }
+
+  .ai-composer{ display:flex; gap:8px; }
+  .ai-composer input{
+    flex:1; min-width:0; height:var(--filter-h); padding:0 14px; border:1px solid var(--v-border); border-radius:var(--v-radius-sm);
+    background:var(--v-bg); color:var(--v-text); font-family:inherit; font-size:.88rem;
+    transition:border-color .1s, box-shadow .1s;
+  }
+  .ai-composer input:focus{ outline:none; border-color:var(--v-ai); box-shadow:0 0 0 2px var(--v-ai-selected); }
+  .btn-ai{
+    font-family:inherit; font-weight:600; font-size:.85rem; height:var(--filter-h); padding:0 18px; flex:none;
+    background:var(--v-ai-solid); color:#fff; border:1px solid var(--v-ai-solid); border-radius:var(--v-radius-sm); cursor:pointer;
+    transition:background .1s;
+  }
+  .btn-ai:hover{ background:var(--v-ai-solid-hover); border-color:var(--v-ai-solid-hover); }
+  .btn-ai:disabled{ opacity:.5; cursor:not-allowed; }
+  .ai-footnote{ display:flex; justify-content:flex-end; }
+
+  .ai-interp-row{ font-size:.78rem; color:var(--v-text-secondary); }
+  .ai-interp-label{ display:inline-flex; align-items:center; gap:4px; font-weight:600; color:var(--v-ai); white-space:nowrap; }
+  .ai-interp-label svg{ width:13px; height:13px; }
+  .ai-chip{
+    max-width:320px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+    background:var(--v-ai-surface); color:var(--v-ai); border:1px solid var(--v-ai-selected);
+    font-weight:600; padding:1px 9px; border-radius:12px; line-height:1.6;
+  }
+  .ai-interp-row .fs-count{ margin-left:auto; white-space:nowrap; }
+  .ai-reason{ font-size:.76rem; color:var(--v-text-secondary); margin-top:5px; line-height:1.5; }
+  .ai-reason b{ color:var(--v-ai); font-weight:600; }
+  .chip.tone-rel-high{ background:var(--v-ai-selected); color:var(--v-ai); }
+  .chip.tone-rel-medium{ background:var(--v-ai-surface); color:var(--v-text-secondary); }
+  @media (max-width:640px){
+    .ai-msg-user .ai-bubble{ max-width:88%; }
+  }
+
   table{width:100%; border-collapse:collapse; background:var(--v-bg); font-size:.85rem; margin-top:16px; border-radius:var(--v-radius-md); overflow:hidden; box-shadow:var(--v-shadow-xs);}
   thead th{
     text-align:left; font-size:.72rem; letter-spacing:.03em; color:var(--v-text-secondary); text-transform:uppercase;
     background:var(--v-bg-grey); border-bottom:1px solid var(--v-border-layout); padding:10px 12px; font-weight:600; white-space:nowrap;
   }
   thead th.sortable{ cursor:pointer; user-select:none; }
-  thead th.sortable:hover{ color:var(--v-primary); }
+  thead th.sortable:hover{ color:var(--v-primary-text); }
   thead th.sortable .sort-arrows{
     display:inline-flex; flex-direction:column; vertical-align:middle; margin-left:4px; gap:1px; line-height:0;
   }
@@ -196,7 +318,7 @@
   thead th.sortable .sort-arrows .sa-up,
   thead th.sortable .sort-arrows .sa-down{ color:var(--v-text-secondary); opacity:.4; }
   thead th.sortable.sort-active .sort-arrows .sa-up.active,
-  thead th.sortable.sort-active .sort-arrows .sa-down.active{ color:var(--v-primary); opacity:1; }
+  thead th.sortable.sort-active .sort-arrows .sa-down.active{ color:var(--v-primary-text); opacity:1; }
   tbody td{ padding:12px; border-bottom:1px solid var(--v-border-layout); vertical-align:top; }
   tbody tr:last-child td{ border-bottom:none; }
   tbody tr:hover{ background:var(--v-bg-grey); }
@@ -212,7 +334,7 @@
     display:inline-flex; align-items:center; gap:5px; padding:2px 9px; border-radius:12px;
     font-size:.68rem; font-weight:600; white-space:nowrap; line-height:1.7;
   }
-  .chip.tone-sent{ background:var(--v-primary-selected); color:var(--v-primary-hover); }
+  .chip.tone-sent{ background:var(--v-primary-selected); color:var(--v-primary-text); }
   .chip.tone-received{ background:var(--v-positive-selected); color:var(--v-positive); }
   .chip.tone-internal{ background:var(--v-indigo-selected); color:var(--v-indigo); }
   .chip.tone-unknown{ background:var(--v-bg-disabled); color:var(--v-text-secondary); }
@@ -225,26 +347,28 @@
   tbody tr.row-selected{ background:var(--v-primary-highlight); }
   tbody tr.row-selected:hover{ background:var(--v-primary-selected); }
 
-  /* Same flex layout as .filters-row on purpose — this bar swaps in for
-     that row when something's selected, so matching its shape (not just
-     roughly its height) keeps the table from jumping when they trade places.
-     Both rows stay stacked in the same grid cell (rather than one being
-     display:none) so the swap can crossfade instead of hard-cutting — and
-     since neither is ever actually removed from flow, the grid track's
-     height never has to jump to accommodate just one of them. */
+  /* The results row (目前篩選 / AI 的理解) and the bulk bar share one flex
+     shape on purpose — the bulk bar swaps in for it when something's
+     selected, so matching its shape (not just roughly its height) keeps the
+     table from jumping when they trade places. All rows stay stacked in the
+     same grid cell (rather than one being display:none) so the swap can
+     crossfade instead of hard-cutting — and since none is ever actually
+     removed from flow, the grid track's height never has to jump to
+     accommodate just one of them. */
+  .filters-row{ display:flex; gap:8px; align-items:center; flex-wrap:wrap; min-height:var(--filter-h); }
   .filter-slot{ display:grid; }
   .filter-slot > *{ grid-area:1 / 1; }
-  .filters-row, .bulk-action-bar{
+  .results-row, .bulk-action-bar{
     display:flex; gap:8px; align-items:center; flex-wrap:wrap; min-height:var(--filter-h);
     opacity:1; transform:translateY(0); visibility:visible;
     transition:opacity .16s ease, transform .16s ease;
   }
-  .filters-row.slot-hidden, .bulk-action-bar.slot-hidden{
+  .results-row.slot-hidden, .bulk-action-bar.slot-hidden{
     opacity:0; transform:translateY(-4px); visibility:hidden; pointer-events:none;
     transition:opacity .16s ease, transform .16s ease, visibility 0s linear .16s;
   }
   .bulk-action-bar .bulk-count{
-    font-size:.78rem; font-weight:600; color:var(--v-primary);
+    font-size:.78rem; font-weight:600; color:var(--v-primary-text);
     background:var(--v-primary-selected); padding:6px 10px; border-radius:var(--v-radius-sm); white-space:nowrap;
   }
   .bulk-action-bar .bulk-spacer{ flex:1; }
@@ -262,7 +386,7 @@
      straight to 0 even with an explicit width set, unlike text content.
      flex:none plus min-width/min-height pins its box so it never collapses. */
   .icon-btn svg{ width:16px; height:16px; min-width:16px; min-height:16px; flex:none; }
-  .icon-btn:hover{ background:var(--v-bg-grey); color:var(--v-primary); }
+  .icon-btn:hover{ background:var(--v-bg-grey); color:var(--v-primary-text); }
   .icon-btn.danger:hover{ background:var(--v-negative-selected); color:var(--v-negative); }
   .icon-btn:disabled{ opacity:.35; cursor:not-allowed; }
   .icon-btn:disabled:hover{ background:transparent; color:var(--v-text-secondary); }
@@ -271,7 +395,7 @@
     color:var(--v-text); padding:6px 10px; border-radius:var(--v-radius-sm); cursor:pointer;
     transition:border-color .1s, background .1s, color .1s;
   }
-  button.act:hover{ border-color:var(--v-primary); color:var(--v-primary); background:var(--v-primary-highlight); }
+  button.act:hover{ border-color:var(--v-primary); color:var(--v-primary-text); background:var(--v-primary-highlight); }
   button.act.danger:hover{ border-color:var(--v-negative); color:var(--v-negative); background:var(--v-negative-selected); }
   button.act:disabled{ opacity:.4; cursor:not-allowed; }
   button.act:disabled:hover{ border-color:var(--v-border); color:var(--v-text); background:var(--v-bg); }
@@ -297,23 +421,56 @@
   .btn-primary{ background:var(--v-primary); color:#fff; border:1px solid var(--v-primary); }
   .btn-primary:hover{ background:var(--v-primary-hover); border-color:var(--v-primary-hover); }
   .btn-secondary{ background:transparent; color:var(--v-text); border:1px solid var(--v-border); }
-  .btn-secondary:hover{ border-color:var(--v-primary); color:var(--v-primary); }
+  .btn-secondary:hover{ border-color:var(--v-primary); color:var(--v-primary-text); }
   .btn-secondary.btn-danger:hover{ border-color:var(--v-negative); color:var(--v-negative); background:var(--v-negative-selected); }
 
-  #importOverlay{
-    position:fixed; inset:0; background:rgba(41,47,76,.55); display:none;
+  #importOverlay, #aiSettingsOverlay{
+    position:fixed; inset:0; background:var(--v-overlay); display:none;
     align-items:flex-start; justify-content:center; padding:40px 16px; z-index:55; overflow-y:auto;
   }
-  #importOverlay.show{ display:flex; }
-  #importModal{
+  #importOverlay.show, #aiSettingsOverlay.show{ display:flex; }
+  #importModal, #aiSettingsModal{
     background:var(--v-bg); max-width:640px; width:100%; border-radius:var(--v-radius-md);
     border:1px solid var(--v-border-layout); box-shadow:var(--v-shadow-md); padding:22px 24px; margin-bottom:40px;
   }
-  #importModal .edit-modal-header{ margin-bottom:18px; }
+  #aiSettingsModal{ max-width:540px; }
+  #importModal .edit-modal-header, #aiSettingsModal .edit-modal-header{ margin-bottom:18px; }
+  .modal-sub{ font-size:.8rem; color:var(--v-text-secondary); }
+
+  /* --- AI 設定 dialog ------------------------------------------------------ */
+  .settings-form{ display:flex; flex-direction:column; }
+  .settings-form label{ font-size:.8rem; font-weight:600; color:var(--v-text); margin-bottom:6px; }
+  .settings-form input, .settings-form select{
+    width:100%; height:var(--filter-h); padding:0 12px; border:1px solid var(--v-border); border-radius:var(--v-radius-sm);
+    background:var(--v-bg-grey); color:var(--v-text); font-family:inherit; font-size:.85rem;
+  }
+  .settings-form input{ font-family:var(--v-mono); font-size:.8rem; }
+  .settings-form input:focus, .settings-form select:focus{ outline:none; border-color:var(--v-primary); box-shadow:0 0 0 2px var(--v-primary-selected); }
+  .settings-key-row{ display:flex; gap:8px; }
+  .settings-key-row button{ flex:none; height:var(--filter-h); }
+  .settings-help{ margin:6px 0 18px; font-size:.75rem; color:var(--v-text-secondary); line-height:1.6; }
+  .settings-help a{ color:var(--v-link); }
+  .settings-note{
+    font-size:.78rem; line-height:1.65; color:var(--v-text); padding:10px 12px; border-radius:var(--v-radius-sm);
+    background:var(--v-ai-surface); border:1px solid var(--v-ai-selected);
+  }
+  .settings-actions{ display:flex; align-items:center; gap:8px; margin-top:20px; }
+  .settings-actions .settings-spacer{ flex:1; }
+  .settings-actions button{
+    font-family:inherit; font-weight:600; padding:9px 18px; border-radius:var(--v-radius-sm); font-size:.85rem; cursor:pointer;
+    transition:background .1s, border-color .1s;
+  }
+  .ai-head-tools{ display:flex; align-items:center; gap:12px; margin-left:auto; }
+  .ai-key-status{ font-size:.75rem; color:var(--v-text-secondary); }
+  .ai-key-status .link-btn{ font-size:.75rem; padding:0 2px; }
+  .ai-settings-btn{ display:inline-flex; align-items:center; gap:6px; height:32px; }
+  .ai-settings-btn svg{ width:14px; height:14px; flex:none; }
+  .ai-settings-dot{ width:7px; height:7px; border-radius:50%; background:var(--v-warning-text); }
+  .ai-footnote .link-btn{ font-size:.72rem; padding:0 2px; }
   #importModal #dropzone{ margin-bottom:12px; }
 
   #detailOverlay{
-    position:fixed; inset:0; background:rgba(41,47,76,.55); display:none;
+    position:fixed; inset:0; background:var(--v-overlay); display:none;
     align-items:center; justify-content:center; padding:24px 16px; z-index:55;
   }
   #detailOverlay.show{ display:flex; }
@@ -371,8 +528,7 @@
 <div class="wrap">
   <header>
     <div>
-      <h1><span>米花市政府教育局</span> 公文 OCR 建檔工具</h1>
-      <p id="pageSubtitle">資料僅儲存於此瀏覽器（IndexedDB），清除瀏覽器資料將會遺失清單。原始 PDF 與辨識結果皆不會上傳到任何伺服器。</p>
+      <h1><span>米花市教育局</span>AI公文資料庫</h1>
     </div>
     <div class="stats">
       <div><b id="totalCount">0</b> 筆文件</div>
@@ -381,12 +537,32 @@
   </header>
 
   <section id="page-list">
-  <div class="filters">
-    <input id="searchBox" type="text" class="filters-search" placeholder="關鍵字查詢：檔名、字號、主旨、全文內容…">
+  <!-- One search area, two ways in: the toggle swaps just the block below it
+       between the manual filters and the AI conversation, while the document
+       list further down stays the same shared list. -->
+  <div class="search-area" id="searchArea" data-mode="manual">
+    <div class="search-area-head">
+      <div class="mode-toggle" role="tablist" aria-label="找公文的方式">
+        <button type="button" role="tab" data-mode="manual" aria-selected="true">
+          <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2.5 4H13.5M4.5 8H11.5M6.5 12H9.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+          人工篩選
+        </button>
+        <button type="button" role="tab" data-mode="ai" aria-selected="false">
+          <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M8 1.5L9.4 6.1L14 7.5L9.4 8.9L8 13.5L6.6 8.9L2 7.5L6.6 6.1L8 1.5Z" fill="currentColor"/><path d="M13 11.5L13.5 13L15 13.5L13.5 14L13 15.5L12.5 14L11 13.5L12.5 13L13 11.5Z" fill="currentColor"/></svg>
+          AI 搜尋
+        </button>
+      </div>
+      <span class="search-area-hint" id="searchAreaHint"></span>
+      <div class="ai-head-tools" id="aiHeadTools" hidden>
+        <span class="ai-key-status" id="aiFootnoteText"></span>
+        <button class="act ai-settings-btn" id="aiSettingsBtn" type="button">
+        <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M8 10.2A2.2 2.2 0 1 0 8 5.8a2.2 2.2 0 0 0 0 4.4Z" stroke="currentColor" stroke-width="1.3"/><path d="M13 8c0-.4 0-.8-.1-1.1l1.3-1-1.2-2.1-1.6.6a5 5 0 0 0-1.9-1.1L9.2 1.6H6.8l-.3 1.7a5 5 0 0 0-1.9 1.1L3 3.8 1.8 5.9l1.3 1A5 5 0 0 0 3 8c0 .4 0 .8.1 1.1l-1.3 1 1.2 2.1 1.6-.6c.6.5 1.2.9 1.9 1.1l.3 1.7h2.4l.3-1.7a5 5 0 0 0 1.9-1.1l1.6.6 1.2-2.1-1.3-1c.1-.3.1-.7.1-1.1Z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg>AI 設定<span class="ai-settings-dot" id="aiSettingsDot" title="尚未設定 API 金鑰"></span>
+        </button>
+      </div>
+    </div>
 
-    <!-- 這兩個 row 佔用同一個位置：有勾選時 bulk-action-bar 取代
-         filters-row 顯示，而不是疊加在它下面，這樣表格才不會被往下推。 -->
-    <div class="filter-slot">
+    <div class="search-pane" id="manualPane">
+      <input id="searchBox" type="text" class="filters-search" placeholder="關鍵字查詢：檔名、字號、主旨、全文內容…">
       <div class="filters-row" id="filtersRow">
         <div class="multiselect" id="agencyFilterWrap">
           <button type="button" class="multiselect-btn" id="agencyFilterBtn"></button>
@@ -403,17 +579,34 @@
         </div>
         <button class="link-btn" id="clearFiltersBtn" type="button">清除篩選</button>
       </div>
-
-      <div class="bulk-action-bar slot-hidden" id="bulkActionBar">
-        <span class="bulk-count" id="bulkCount">已選取 0 筆</span>
-        <button class="act" id="bulkClearBtn" type="button">取消選取</button>
-        <span class="bulk-spacer"></span>
-        <button class="act" id="bulkDownloadMdBtn" type="button">下載 Markdown 檔案</button>
-        <button class="act danger" id="bulkDeleteBtn" type="button">刪除選取項目</button>
-      </div>
     </div>
 
-    <div class="filter-summary" id="filterSummary"></div>
+    <div class="search-pane ai-panel" id="aiPanel" hidden>
+      <div class="ai-thread" id="aiThread"></div>
+      <div class="ai-composer">
+        <input id="aiInput" type="text" autocomplete="off" placeholder="用一句話描述你要找的公文，例如「今年跟課後照顧班有關的收文」">
+        <button class="btn-ai" id="aiSendBtn" type="button">送出</button>
+      </div>
+      <div class="ai-examples" id="aiExamples"></div>
+      <div class="ai-footnote" id="aiFootnote" hidden>
+        <button class="link-btn" id="aiResetBtn" type="button">重新開始對話</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 這幾個 row 佔用同一個位置：結果說明（人工篩選的「目前篩選」或 AI 的
+       「AI 的理解」）平常顯示在這裡，有勾選時 bulk-action-bar 取代它，
+       而不是疊加在它下面，這樣表格才不會被往下推。 -->
+  <div class="filter-slot" id="resultsHead">
+    <div class="filter-summary results-row" id="filterSummary"></div>
+    <div class="ai-interp-row results-row slot-hidden" id="aiInterpRow"></div>
+    <div class="bulk-action-bar slot-hidden" id="bulkActionBar">
+      <span class="bulk-count" id="bulkCount">已選取 0 筆</span>
+      <button class="act" id="bulkClearBtn" type="button">取消選取</button>
+      <span class="bulk-spacer"></span>
+      <button class="act" id="bulkDownloadMdBtn" type="button">下載 Markdown 檔案</button>
+      <button class="act danger" id="bulkDeleteBtn" type="button">刪除選取項目</button>
+    </div>
   </div>
 
   <table id="docTable">
@@ -435,6 +628,42 @@
   </table>
   <div id="emptyState" class="empty-state">尚未上傳任何文件</div>
   </section>
+</div>
+
+<div id="aiSettingsOverlay">
+  <div id="aiSettingsModal" role="dialog" aria-modal="true" aria-labelledby="aiSettingsTitle">
+    <div class="edit-modal-header">
+      <div>
+        <h2 id="aiSettingsTitle">AI 設定</h2>
+        <div class="modal-sub">設定 AI 搜尋要使用的 Claude 模型與 API 金鑰。</div>
+      </div>
+      <div class="modal-actions">
+        <button class="icon-btn" id="aiSettingsCloseBtn" type="button" title="關閉" aria-label="關閉">
+          <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 5L15 15M15 5L5 15" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+        </button>
+      </div>
+    </div>
+    <div class="settings-form">
+      <label for="aiKeyInput">Anthropic API 金鑰</label>
+      <div class="settings-key-row">
+        <input id="aiKeyInput" type="password" autocomplete="off" spellcheck="false" placeholder="sk-ant-…">
+        <button class="act" id="aiKeyToggleBtn" type="button">顯示</button>
+      </div>
+      <p class="settings-help">到 <a href="https://console.anthropic.com/settings/keys" target="_blank" rel="noopener">Anthropic Console</a> 建立金鑰。金鑰只存在這個瀏覽器，不會寫進 HTML 檔，把檔案傳給別人也不會帶出去。</p>
+
+      <label for="aiModelSelect">模型</label>
+      <select id="aiModelSelect"></select>
+      <p class="settings-help">模型越強，理解與排序越準確，但回覆也越慢、越貴。</p>
+
+      <div class="settings-note">使用 AI 搜尋時，每次提問都會把全部公文的摘要（文別、收發文者、字號、日期、主旨，以及說明與擬辦的節錄）連同你的問題傳送到 Anthropic API。人工篩選不會傳送任何資料。</div>
+    </div>
+    <div class="settings-actions">
+      <button class="btn-secondary btn-danger" id="aiKeyClearBtn" type="button">清除金鑰</button>
+      <span class="settings-spacer"></span>
+      <button class="btn-secondary" id="aiSettingsCancelBtn" type="button">取消</button>
+      <button class="btn-primary" id="aiSettingsSaveBtn" type="button">儲存</button>
+    </div>
+  </div>
 </div>
 
 <div id="importOverlay">
@@ -1046,9 +1275,13 @@ function updateBulkActionBar(visibleIds){
   selectAllCb.checked = visibleIds.size > 0 && visibleSelectedCount === visibleIds.size;
   selectAllCb.indeterminate = visibleSelectedCount > 0 && visibleSelectedCount < visibleIds.size;
 
+  // The slot's resting row depends on the mode: "目前篩選" for manual, or
+  // "AI 的理解" in AI mode. Either way the bulk bar replaces it.
   const hasSelection = selectedIds.size > 0;
+  const aiMode = searchMode === "ai";
   document.getElementById("bulkActionBar").classList.toggle("slot-hidden", !hasSelection);
-  document.getElementById("filtersRow").classList.toggle("slot-hidden", hasSelection);
+  document.getElementById("filterSummary").classList.toggle("slot-hidden", hasSelection || aiMode);
+  document.getElementById("aiInterpRow").classList.toggle("slot-hidden", hasSelection || !aiMode);
   document.getElementById("bulkCount").textContent = `已選取 ${selectedIds.size} 筆`;
 }
 
@@ -1071,10 +1304,27 @@ function renderFilterSummary(q, dateFrom, dateTo, visibleCount){
     : `<span>目前顯示：全部公文</span><span class="fs-count">共 ${records.length} 筆</span>`);
 }
 
+// Rows the table currently shows: the manual filters' matches, or — in AI
+// mode — the latest AI answer's results, in its relevance order. Before
+// the first question AI mode shows everything, same as an unfiltered list.
+function getVisibleRecords(){
+  if (searchMode === "ai") {
+    const turn = latestAnsweredAiTurn();
+    if (!turn) return applyDateSort(records.slice());
+    const byId = new Map(records.map(r => [r.id, r]));
+    return applyDateSort(turn.response.results.map(x => byId.get(x.id)).filter(Boolean));
+  }
+  const { q, dateFrom, dateTo } = getActiveFilters();
+  return applyDateSort(records.filter(r => matchesFilter(r, q, selectedAgencies, selectedRecipients, dateFrom, dateTo)));
+}
+
 function renderTable(){
   const tbody = document.getElementById("tbody");
   const { q, dateFrom, dateTo } = getActiveFilters();
-  const visible = applyDateSort(records.filter(r => matchesFilter(r, q, selectedAgencies, selectedRecipients, dateFrom, dateTo)));
+  const aiMode = searchMode === "ai";
+  const aiTurn = aiMode ? latestAnsweredAiTurn() : null;
+  const aiInfo = aiTurn ? new Map(aiTurn.response.results.map(x => [x.id, x])) : null;
+  const visible = getVisibleRecords();
   populateMultiSelect("agencyFilterPanel", "agencyFilterBtn", "agency", selectedAgencies, "篩選發文者");
   populateMultiSelect("recipientFilterPanel", "recipientFilterBtn", "recipient", selectedRecipients, "篩選收文者");
 
@@ -1085,23 +1335,27 @@ function renderTable(){
   for (const id of selectedIds) if (!liveIds.has(id)) selectedIds.delete(id);
 
   document.getElementById("totalCount").textContent = records.length;
-  renderFilterSummary(q, dateFrom, dateTo, visible.length);
+  if (aiMode) renderAiInterpretation(aiTurn, visible.length);
+  else renderFilterSummary(q, dateFrom, dateTo, visible.length);
+  document.getElementById("resultsHead").hidden = records.length === 0;
   document.getElementById("emptyState").style.display = records.length === 0 ? "block" : "none";
   document.getElementById("docTable").style.display = records.length === 0 ? "none" : "table";
 
   updateBulkActionBar(visibleIds);
 
   if (records.length > 0 && visible.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="7" class="empty-state">沒有符合篩選條件的文件</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="7" class="empty-state">${aiMode ? "AI 沒有找到相關的公文，換個說法再問問看" : "沒有符合篩選條件的文件"}</td></tr>`;
     return;
   }
 
   tbody.innerHTML = visible.map(r => {
     const isDone = r.status === "done";
+    const hit = aiInfo && aiInfo.get(r.id);
     let tagsHtml;
     if (isDone) {
       const dir = classifyDirection(r.meta);
-      tagsHtml = `<span class="chip tone-${dir}">${escapeHtml(DIRECTION_LABEL[dir])}</span>`
+      tagsHtml = (hit ? `<span class="chip tone-rel-${hit.relevance}">${hit.relevance === "high" ? "高度相關" : "部分相關"}</span>` : "")
+        + `<span class="chip tone-${dir}">${escapeHtml(DIRECTION_LABEL[dir])}</span>`
         + (r.meta.docType ? `<span class="chip tone-unknown">${escapeHtml(r.meta.docType)}</span>` : "")
         + (r.metaEdited ? `<span class="muted" style="font-size:.72rem">內容已手動校正</span>` : "");
     } else if (r.status === "error") {
@@ -1118,6 +1372,7 @@ function renderTable(){
       <td data-label="主旨" class="subtitle-cell">
         <div class="clamp">${subjectText}</div>
         <div class="row-tags">${tagsHtml}</div>
+        ${hit && hit.reason ? `<div class="ai-reason"><b>相關原因</b>　${escapeHtml(hit.reason)}</div>` : ""}
       </td>
       <td data-label="發文者">${escapeHtml(r.meta.agency) || '<span class="muted">—</span>'}</td>
       <td data-label="收文者">${escapeHtml(r.meta.recipient) || '<span class="muted">—</span>'}</td>
@@ -1284,8 +1539,7 @@ document.getElementById("tbody").addEventListener("change", (e) => {
 });
 
 document.getElementById("selectAllCheckbox").addEventListener("change", (e) => {
-  const { q, dateFrom, dateTo } = getActiveFilters();
-  const visible = records.filter(r => matchesFilter(r, q, selectedAgencies, selectedRecipients, dateFrom, dateTo));
+  const visible = getVisibleRecords();
   if (e.target.checked) visible.forEach(r => selectedIds.add(r.id));
   else visible.forEach(r => selectedIds.delete(r.id));
   renderTable();
@@ -1433,6 +1687,776 @@ document.getElementById("clearFiltersBtn").addEventListener("click", () => {
   renderTable();
 });
 
+// --- 人工篩選 / AI 搜尋 mode ------------------------------------------------
+const MODE_STORAGE_KEY = "gov-doc-search-mode";
+
+const SEARCH_HINT_MANUAL = "用關鍵字、機關與日期精準篩選";
+const SEARCH_HINT_AI = "用一句話描述要找的公文，AI 幫你整理重點與相關公文";
+
+let searchMode = "manual";
+try { if (localStorage.getItem(MODE_STORAGE_KEY) === "ai") searchMode = "ai"; } catch (e) {}
+
+function setSearchMode(mode){
+  searchMode = mode;
+  try { localStorage.setItem(MODE_STORAGE_KEY, mode); } catch (e) {}
+  document.querySelectorAll(".mode-toggle button").forEach(b =>
+    b.setAttribute("aria-selected", String(b.dataset.mode === mode)));
+  document.getElementById("searchArea").dataset.mode = mode;
+  document.getElementById("searchAreaHint").textContent = mode === "ai" ? SEARCH_HINT_AI : SEARCH_HINT_MANUAL;
+  document.getElementById("manualPane").hidden = mode === "ai";
+  document.getElementById("aiPanel").hidden = mode !== "ai";
+  document.getElementById("aiHeadTools").hidden = mode !== "ai";
+  // Selections made against one mode's list shouldn't silently carry over
+  // into the other, where those rows may not even be visible.
+  selectedIds.clear();
+  renderAiThread();
+  renderTable();
+  if (mode === "ai") document.getElementById("aiInput").focus();
+}
+document.querySelector(".mode-toggle").addEventListener("click", (e) => {
+  const btn = e.target.closest("button[data-mode]");
+  if (btn && btn.dataset.mode !== searchMode) setSearchMode(btn.dataset.mode);
+});
+
+// --- AI 搜尋: conversation state ---------------------------------------------
+// Each turn is { query, engine, startedAt, pending, error, response }, where
+// engine is the Claude model id (or "mock" when no API key is set) and
+// response has the same shape from either engine:
+//   { summary, keywords[], interpretation{direction, docTypes[], agencies[],
+//     dateFrom, dateTo, topic}, results[{ id, relevance, reason }] }
+let aiConversation = [];
+const AI_EXAMPLES = ["今年跟課後照顧班有關的收文", "米花國中廁所修繕的進度", "國教科的簽", "工務局最近的來文"];
+
+function latestAnsweredAiTurn(){
+  for (let i = aiConversation.length - 1; i >= 0; i--) if (aiConversation[i].response) return aiConversation[i];
+  return null;
+}
+function aiBusy(){ return aiConversation.some(t => t.pending); }
+
+const SPARKLE_SVG = `<svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M8 1.5L9.4 6.1L14 7.5L9.4 8.9L8 13.5L6.6 8.9L2 7.5L6.6 6.1L8 1.5Z" fill="currentColor"/><path d="M13 11.5L13.5 13L15 13.5L13.5 14L13 15.5L12.5 14L11 13.5L12.5 13L13 11.5Z" fill="currentColor"/></svg>`;
+const SEARCH_SVG = `<svg viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="5" cy="5" r="3.5" stroke="currentColor" stroke-width="1.4"/><path d="M7.7 7.7L10.5 10.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>`;
+
+function renderAiThread(){
+  const el = document.getElementById("aiThread");
+  document.getElementById("aiFootnote").hidden = !aiConversation.length;
+  document.getElementById("aiSendBtn").disabled = aiBusy();
+  // Example questions are a way to get started — once a conversation is
+  // going, clicking one would be read as a follow-up, so they step aside.
+  const examplesEl = document.getElementById("aiExamples");
+  examplesEl.hidden = aiConversation.length > 0;
+  el.hidden = !aiConversation.length;
+  if (!aiConversation.length) {
+    examplesEl.innerHTML = `<span class="ai-examples-label">可以試著問問：</span>` + AI_EXAMPLES.map(q =>
+      `<button type="button" class="ai-example" data-ai-example="${escapeHtml(q)}">${escapeHtml(q)}</button>`).join("");
+    el.innerHTML = "";
+    return;
+  }
+  const lastIdx = aiConversation.length - 1;
+  el.innerHTML = aiConversation.map((turn, i) => {
+    const userHtml = `<div class="ai-msg-user"><div class="ai-bubble">${escapeHtml(turn.query)}</div></div>`;
+    let body;
+    if (turn.pending) {
+      const who = turn.engine === "mock" ? "" : `${aiModelLabel(turn.engine)} `;
+      body = `<div class="ai-loading">${escapeHtml(who)}正在閱讀 ${records.length} 份公文<span class="ai-dots"><i></i><i></i><i></i></span>`
+        + (turn.engine === "mock" ? "" : `<span class="ai-elapsed" data-started="${turn.startedAt}"></span>`) + `</div>`;
+    } else if (turn.error) {
+      body = `<p class="ai-error">${escapeHtml(turn.error)}</p>`;
+    } else {
+      const { summary, keywords } = turn.response;
+      // Only the latest answer offers keywords — clicking one on an older
+      // turn would branch the conversation from a point it has moved past.
+      const kwHtml = i === lastIdx && keywords.length ? `
+        <div class="ai-kw-block">
+          <div class="ai-kw-label">相關關鍵字：點關鍵字繼續追問，點放大鏡改用人工篩選查詢</div>
+          <div class="ai-kw-list">${keywords.map(k => `
+            <span class="ai-kw">
+              <button type="button" class="ai-kw-main" data-ai-kw="${escapeHtml(k)}">${escapeHtml(k)}</button>
+              <button type="button" class="ai-kw-side" data-ai-kw-manual="${escapeHtml(k)}" title="在人工篩選用「${escapeHtml(k)}」查詢" aria-label="在人工篩選用「${escapeHtml(k)}」查詢">${SEARCH_SVG}</button>
+            </span>`).join("")}</div>
+        </div>` : "";
+      body = `<p class="ai-summary">${escapeHtml(summary)}</p>${kwHtml}`;
+    }
+    return userHtml + `
+      <div class="ai-msg-bot${i < lastIdx ? " is-past" : ""}">
+        <div class="ai-avatar">${SPARKLE_SVG}</div>
+        <div class="ai-card">
+          <div class="ai-card-head">AI 助理<span class="ai-badge">${turn.engine === "mock" ? "示範回覆" : escapeHtml(aiModelLabel(turn.engine))}</span></div>
+          ${body}
+        </div>
+      </div>`;
+  }).join("");
+  el.scrollTop = el.scrollHeight;
+}
+
+function formatInterpretationChips(interp){
+  const chips = [];
+  if (interp.direction) chips.push(DIRECTION_LABEL[interp.direction]);
+  if (interp.docTypes && interp.docTypes.length) chips.push(`文別：${interp.docTypes.join("、")}`);
+  if (interp.agencies && interp.agencies.length) chips.push(`發文者：${interp.agencies.join("、")}`);
+  if (interp.dateFrom || interp.dateTo) chips.push(`日期：${interp.dateFrom || "不限"} ～ ${interp.dateTo || "不限"}`);
+  if (interp.topic) chips.push(`主題：${interp.topic}`);
+  return chips;
+}
+
+// Only 發文者 and the date range have a manual-filter equivalent; direction,
+// 文別 and topic don't, so the button appears only when something transfers.
+function interpretationTransfersToManual(interp){
+  return !!(interp.dateFrom || interp.dateTo || (interp.agencies && interp.agencies.length));
+}
+
+function renderAiInterpretation(turn, visibleCount){
+  const el = document.getElementById("aiInterpRow");
+  if (!turn) {
+    el.innerHTML = `<span>目前顯示：全部公文，問 AI 之後會換成相關的結果</span><span class="fs-count">共 ${visibleCount} 筆</span>`;
+    return;
+  }
+  const interp = turn.response.interpretation;
+  const chips = formatInterpretationChips(interp);
+  el.innerHTML = `<span class="ai-interp-label">${SPARKLE_SVG}AI 的理解：</span>`
+    + (chips.length ? chips.map(c => `<span class="ai-chip" title="${escapeHtml(c)}">${escapeHtml(c)}</span>`).join("") : `<span>沒有特定條件</span>`)
+    + `<span class="fs-count">找到 ${visibleCount} 份・依相關度排序</span>`
+    + (interpretationTransfersToManual(interp)
+      ? `<button class="link-btn" id="aiApplyManualBtn" type="button" title="把日期區間、發文者帶進人工篩選（收發方向、文別、主題沒有對應的篩選欄位，不會帶過去）">套用到人工篩選</button>`
+      : "");
+}
+
+function applyInterpretationToManual(interp){
+  const knownAgencies = new Set(records.map(r => r.meta && r.meta.agency).filter(Boolean));
+  document.getElementById("searchBox").value = "";
+  document.getElementById("dateFromInput").value = interp.dateFrom || "";
+  document.getElementById("dateToInput").value = interp.dateTo || "";
+  selectedAgencies.clear();
+  selectedRecipients.clear();
+  (interp.agencies || []).forEach(a => { if (knownAgencies.has(a)) selectedAgencies.add(a); });
+  setSearchMode("manual");
+}
+
+function searchKeywordManually(keyword){
+  document.getElementById("searchBox").value = keyword;
+  document.getElementById("dateFromInput").value = "";
+  document.getElementById("dateToInput").value = "";
+  selectedAgencies.clear();
+  selectedRecipients.clear();
+  setSearchMode("manual");
+}
+
+async function sendAiQuery(text){
+  text = (text || "").trim();
+  if (!text || aiBusy()) return;
+  const history = aiConversation.filter(t => t.response);
+  const settings = loadAiSettings();
+  const turn = {
+    query: text, engine: settings.apiKey ? settings.model : "mock", startedAt: Date.now(),
+    pending: true, error: null, response: null,
+  };
+  aiConversation.push(turn);
+  document.getElementById("aiInput").value = "";
+  renderAiThread();
+  try {
+    turn.response = sanitizeAiResponse(turn.engine === "mock"
+      ? await runMockSearch(text, history)
+      : await runClaudeSearch(text, history, settings));
+  } catch (err) {
+    console.error(err);
+    turn.error = `搜尋失敗：${err && err.message ? err.message : err}`;
+  }
+  turn.pending = false;
+  selectedIds.clear();
+  renderAiThread();
+  renderTable();
+}
+
+// Whatever the AI answers, the list only ever shows documents that exist,
+// once each, and that actually satisfy the hard conditions it claims to
+// have understood — so a wrong id or a date it got wrong can't slip through.
+function sanitizeAiResponse(resp){
+  const byId = new Map(records.map(r => [r.id, r]));
+  const interp = resp.interpretation || {};
+  const from = interp.dateFrom ? new Date(interp.dateFrom + "T00:00:00") : null;
+  const to = interp.dateTo ? new Date(interp.dateTo + "T23:59:59") : null;
+  const seen = new Set();
+  const results = (resp.results || []).filter(x => {
+    const r = byId.get(x.id);
+    if (!r || r.status !== "done" || seen.has(x.id)) return false;
+    seen.add(x.id);
+    if (interp.direction && classifyDirection(r.meta) !== interp.direction) return false;
+    if (from || to) {
+      const d = parseRocDateToDate(r.meta.docDate);
+      if (!d || (from && d < from) || (to && d > to)) return false;
+    }
+    return true;
+  });
+  return {
+    summary: resp.summary || "",
+    keywords: (resp.keywords || []).filter(Boolean).slice(0, 6),
+    interpretation: interp,
+    results,
+  };
+}
+
+// --- AI 設定: API key + model ------------------------------------------------
+// The key lives only in this browser's localStorage — never in the HTML file
+// itself, so passing the file to someone else never passes the key along.
+const AI_KEY_STORAGE = "gov-doc-ai-api-key";
+const AI_MODEL_STORAGE = "gov-doc-ai-model";
+const AI_MODELS = [
+  { id: "claude-opus-5", label: "Claude Opus 5", note: "建議：理解與排序最準確" },
+  { id: "claude-sonnet-5", label: "Claude Sonnet 5", note: "較快、費用較低" },
+  { id: "claude-haiku-4-5", label: "Claude Haiku 4.5", note: "最快、費用最低，準確度較差" },
+];
+const AI_DEFAULT_MODEL = AI_MODELS[0].id;
+
+function aiModelLabel(id){
+  const m = AI_MODELS.find(x => x.id === id);
+  return m ? m.label : id;
+}
+function loadAiSettings(){
+  let apiKey = "", model = AI_DEFAULT_MODEL;
+  try {
+    apiKey = localStorage.getItem(AI_KEY_STORAGE) || "";
+    const saved = localStorage.getItem(AI_MODEL_STORAGE);
+    if (AI_MODELS.some(m => m.id === saved)) model = saved;
+  } catch (e) {}
+  return { apiKey, model };
+}
+function saveAiSettings({ apiKey, model }){
+  try {
+    if (apiKey) localStorage.setItem(AI_KEY_STORAGE, apiKey); else localStorage.removeItem(AI_KEY_STORAGE);
+    localStorage.setItem(AI_MODEL_STORAGE, model);
+  } catch (e) {
+    alert("無法儲存設定：這個瀏覽器封鎖了本機儲存空間。");
+  }
+}
+
+function renderAiFootnote(){
+  const { apiKey, model } = loadAiSettings();
+  document.getElementById("aiSettingsDot").hidden = !!apiKey;
+  document.getElementById("aiFootnoteText").innerHTML = apiKey
+    ? `使用 ${escapeHtml(aiModelLabel(model))}・提問會把公文摘要傳送到 Anthropic`
+    : `尚未設定 API 金鑰，目前是示範回覆`;
+}
+
+function openAiSettings(){
+  const { apiKey, model } = loadAiSettings();
+  const keyInput = document.getElementById("aiKeyInput");
+  keyInput.value = apiKey;
+  keyInput.type = "password";
+  document.getElementById("aiKeyToggleBtn").textContent = "顯示";
+  document.getElementById("aiModelSelect").innerHTML = AI_MODELS.map(m =>
+    `<option value="${m.id}" ${m.id === model ? "selected" : ""}>${escapeHtml(m.label)}（${escapeHtml(m.note)}）</option>`).join("");
+  document.getElementById("aiKeyClearBtn").hidden = !apiKey;
+  document.getElementById("aiSettingsOverlay").classList.add("show");
+  keyInput.focus();
+}
+function closeAiSettings(){
+  document.getElementById("aiSettingsOverlay").classList.remove("show");
+}
+
+// --- AI 搜尋: Claude engine ----------------------------------------------------
+// The official Anthropic SDK, loaded from a CDN only the first time a Claude
+// search runs, so the page itself still opens with no network dependency on it.
+const ANTHROPIC_SDK_URL = "https://cdn.jsdelivr.net/npm/@anthropic-ai/sdk@0.128.0/+esm";
+let anthropicSdkPromise = null;
+function loadAnthropicSdk(){
+  if (!anthropicSdkPromise) {
+    anthropicSdkPromise = import(ANTHROPIC_SDK_URL).then(m => m.default).catch(err => {
+      anthropicSdkPromise = null; // let the next attempt retry, e.g. once back online
+      throw new Error("無法載入 Claude SDK，請確認網路連線。");
+    });
+  }
+  return anthropicSdkPromise;
+}
+
+const AI_DOC_TYPES = ["令", "呈", "咨", "函", "公告", "簽", "書函", "開會通知單", "其他公文"];
+
+// Constrains Claude's reply to exactly the shape the UI renders (structured
+// outputs), so there's no free-form JSON to coax or repair.
+const AI_RESPONSE_SCHEMA = {
+  type: "object",
+  additionalProperties: false,
+  required: ["summary", "keywords", "interpretation", "results"],
+  properties: {
+    summary: { type: "string" },
+    keywords: { type: "array", items: { type: "string" } },
+    interpretation: {
+      type: "object",
+      additionalProperties: false,
+      required: ["direction", "docTypes", "agencies", "dateFrom", "dateTo", "topic"],
+      properties: {
+        direction: { type: "string", enum: ["any", "sent", "received", "internal"] },
+        docTypes: { type: "array", items: { type: "string", enum: AI_DOC_TYPES } },
+        agencies: { type: "array", items: { type: "string" } },
+        dateFrom: { type: "string", description: "YYYY-MM-DD，沒有就是空字串" },
+        dateTo: { type: "string", description: "YYYY-MM-DD，沒有就是空字串" },
+        topic: { type: "string" },
+      },
+    },
+    results: {
+      type: "array",
+      items: {
+        type: "object",
+        additionalProperties: false,
+        required: ["id", "relevance", "reason"],
+        properties: {
+          id: { type: "string" },
+          relevance: { type: "string", enum: ["high", "medium"] },
+          reason: { type: "string" },
+        },
+      },
+    },
+  },
+};
+
+const AI_SYSTEM_PROMPT = `你是「米花市教育局AI公文資料庫」的搜尋助理。使用者是教育局處理公文的承辦人員，會用一句話描述想找的公文。請從下方的公文清單找出相關的公文，並用繁體中文回覆。
+
+公文資料是 OCR 辨識出來的，常有錯字（例如「檢送」被辨識成「撿送」），也可能缺少欄位。請依語意判斷，不要因為錯字就漏掉相關的公文。「收發」欄是系統判斷的方向：發文是本局發出、收文是本局收到、局內是內部簽呈。日期都已轉成西元 YYYY-MM-DD。
+
+各欄位的寫法：
+- summary：2 到 4 句話，總結找到的公文：共幾份、有什麼共同點、時間範圍，以及最值得先看的是哪幾份（例如有回覆期限、密等較高、案件的最新進度）。只根據 results 裡的公文來寫。沒有找到就直接說，並建議可以怎麼換個問法。
+- keywords：4 到 6 個使用者接下來可能想追問的關鍵字，優先取自相關公文裡的實際用詞，每個 2 到 8 個字，不要和 topic 重複。
+- interpretation：你從問題（連同前面的對話）理解出的條件。direction、docTypes、agencies、dateFrom、dateTo 只在使用者明確提到時才填，沒提到就分別用 any、空陣列、空陣列、空字串、空字串。agencies 必須完全照抄清單中「發文者」欄位的寫法。topic 用幾個字描述主題，沒有主題就用空字串。
+- results：相關的公文，最相關的排最前面。只列真的相關的，最多 15 份。relevance：high 是直接符合，medium 是部分相關或背景資料。reason 用一句話說明這份公文為什麼相關，要指出公文裡的具體內容，不要重複 interpretation 已經列出的條件。
+
+使用者追問時，沿用前面對話的條件，除非這次的問題改變了某個條件。`;
+
+function clipText(s, n){
+  s = (s || "").replace(/\s+/g, " ").trim();
+  return s.length > n ? s.slice(0, n) + "…" : s;
+}
+
+// One compact JSON line per document. Documents get short ids (d1, d2…)
+// instead of their UUIDs — far fewer tokens, and nothing for the model to
+// mistype. The block is identical from one question to the next (only the
+// question itself changes), which is what lets it be prompt-cached.
+function buildAiCorpus(){
+  const docs = records.filter(r => r.status === "done");
+  const realIdOf = new Map();
+  const shortIdOf = new Map();
+  const lines = docs.map((r, i) => {
+    const sid = `d${i + 1}`;
+    realIdOf.set(sid, r.id);
+    shortIdOf.set(r.id, sid);
+    const m = r.meta || {};
+    const d = parseRocDateToDate(m.docDate);
+    const entry = {
+      id: sid,
+      文別: m.docType, 收發: DIRECTION_LABEL[classifyDirection(m)],
+      發文者: m.agency, 受文者: m.recipient, 發文字號: m.docNumber,
+      發文日期: d ? isoDate(d) : m.docDate, 密等: m.security,
+      主旨: clipText(m.subject, 200), 說明: clipText(m.explanation, 300),
+      擬辦: clipText(m.proposal, 150), 附件: clipText(m.attachment, 80),
+    };
+    // A document whose fields didn't parse would otherwise be invisible to
+    // the search, so fall back to the start of its raw OCR text.
+    if (!m.subject && !m.explanation) entry.內容節錄 = clipText(r.ocrText, 300);
+    for (const k of Object.keys(entry)) if (!entry[k]) delete entry[k];
+    return JSON.stringify(entry);
+  });
+  return { text: lines.join("\n"), count: docs.length, realIdOf, shortIdOf };
+}
+
+function buildAiUserMessage(query, history, corpus){
+  const now = new Date();
+  const parts = [`今天日期：${isoDate(now)}（民國 ${now.getFullYear() - 1911} 年 ${now.getMonth() + 1} 月 ${now.getDate()} 日）`];
+  // Only the last few turns — enough to resolve "那去年的呢" without the
+  // prompt growing for the whole length of a long conversation.
+  const recent = history.slice(-5);
+  if (recent.length) {
+    parts.push("前面的對話（由早到晚）：\n" + recent.map((t, i) => {
+      const it = t.response.interpretation;
+      const understood = {
+        direction: it.direction || "any", docTypes: it.docTypes || [], agencies: it.agencies || [],
+        dateFrom: it.dateFrom || "", dateTo: it.dateTo || "", topic: it.topic || "",
+      };
+      const ids = t.response.results.map(x => corpus.shortIdOf.get(x.id)).filter(Boolean);
+      return `${i + 1}. 使用者：${t.query}\n   你的理解：${JSON.stringify(understood)}\n   你列出的公文：${ids.join("、") || "（沒有）"}`;
+    }).join("\n"));
+  }
+  parts.push(`這次的問題：${query}`);
+  return parts.join("\n\n");
+}
+
+// Turn Claude's answer into the UI's shape: short ids back to real ids,
+// "any"/"" back to null, and only 發文者 values that actually exist.
+function normalizeClaudeAnswer(answer, corpus){
+  const it = answer.interpretation || {};
+  const knownAgencies = new Set(records.map(r => r.meta && r.meta.agency).filter(Boolean));
+  const isDate = v => /^\d{4}-\d{2}-\d{2}$/.test(v || "");
+  return {
+    summary: answer.summary,
+    keywords: answer.keywords,
+    interpretation: {
+      direction: ["sent", "received", "internal"].includes(it.direction) ? it.direction : null,
+      docTypes: (it.docTypes || []).filter(t => AI_DOC_TYPES.includes(t)),
+      agencies: (it.agencies || []).filter(a => knownAgencies.has(a)),
+      dateFrom: isDate(it.dateFrom) ? it.dateFrom : null,
+      dateTo: isDate(it.dateTo) ? it.dateTo : null,
+      topic: it.topic || "",
+    },
+    results: (answer.results || []).map(x => ({
+      id: corpus.realIdOf.get(x.id),
+      relevance: x.relevance === "high" ? "high" : "medium",
+      reason: x.reason,
+    })).filter(x => x.id),
+  };
+}
+
+function describeClaudeError(err, Anthropic){
+  // Most specific first; APIConnectionError is itself a subclass of APIError.
+  if (err instanceof Anthropic.AuthenticationError) return "API 金鑰無效，請到「AI 設定」重新確認。";
+  if (err instanceof Anthropic.PermissionDeniedError) return "這把 API 金鑰沒有使用這個模型的權限，請到「AI 設定」換一個模型。";
+  if (err instanceof Anthropic.NotFoundError) return "找不到選擇的模型，請到「AI 設定」換一個模型。";
+  if (err instanceof Anthropic.RateLimitError) return "請求太頻繁或已達用量上限，請稍後再試。";
+  if (err instanceof Anthropic.BadRequestError) return `請求有誤：${err.message}`;
+  if (err instanceof Anthropic.InternalServerError) return "Anthropic 服務暫時忙碌或出錯，請稍後再試。";
+  if (err instanceof Anthropic.APIConnectionError) return "連不上 Anthropic API，請檢查網路連線。";
+  if (err instanceof Anthropic.APIError) {
+    if (err.status === 402) return "Anthropic 帳戶的額度或付款有問題，請到 Console 確認。";
+    return `API 錯誤（${err.status}）：${err.message}`;
+  }
+  return err && err.message ? err.message : String(err);
+}
+
+async function runClaudeSearch(query, history, settings){
+  const Anthropic = await loadAnthropicSdk();
+  const corpus = buildAiCorpus();
+  if (!corpus.count) throw new Error("目前沒有已完成辨識的公文可以搜尋。");
+
+  // Running in the browser means the key is visible to this page — fine for
+  // a key the user pasted into their own browser, which is the only kind
+  // this tool ever uses.
+  const client = new Anthropic({ apiKey: settings.apiKey, dangerouslyAllowBrowser: true });
+  const params = {
+    model: settings.model,
+    max_tokens: 16000,
+    system: [
+      { type: "text", text: AI_SYSTEM_PROMPT },
+      // Cache breakpoint after the document list: a follow-up question only
+      // pays full price for its own (small) user message.
+      { type: "text", text: `以下是全部公文，每行一份（JSON）：\n<documents>\n${corpus.text}\n</documents>`, cache_control: { type: "ephemeral" } },
+    ],
+    messages: [{ role: "user", content: buildAiUserMessage(query, history, corpus) }],
+    output_config: { format: { type: "json_schema", schema: AI_RESPONSE_SCHEMA } },
+  };
+  // Search is closer to classification than to open-ended reasoning, so a
+  // medium effort keeps answers quick without hurting the ranking. Haiku 4.5
+  // doesn't take an effort setting.
+  if (settings.model !== "claude-haiku-4-5") params.output_config.effort = "medium";
+  // On Opus 5, a request its safety classifiers decline is re-run on
+  // Anthropic's recommended fallback model instead of just failing.
+  if (settings.model === "claude-opus-5") {
+    params.betas = ["server-side-fallback-2026-07-01"];
+    params.fallbacks = "default";
+  }
+
+  let response;
+  try {
+    response = await client.beta.messages.create(params);
+  } catch (err) {
+    throw new Error(describeClaudeError(err, Anthropic));
+  }
+
+  if (response.stop_reason === "refusal") {
+    throw new Error("Claude 拒絕回答這個問題，請換個說法再試。");
+  }
+  if (response.stop_reason === "max_tokens") {
+    throw new Error("回覆太長被截斷了，請把問題縮小一點再試。");
+  }
+  // Only the text after the last fallback block (if any) is the final answer.
+  let text = "";
+  for (const block of response.content) {
+    if (block.type === "fallback") text = "";
+    else if (block.type === "text") text += block.text;
+  }
+  let answer;
+  try {
+    answer = JSON.parse(text);
+  } catch (e) {
+    throw new Error("無法解讀 Claude 的回覆，請再試一次。");
+  }
+  return normalizeClaudeAnswer(answer, corpus);
+}
+
+// --- AI 搜尋: mock engine ----------------------------------------------------
+// Used when no API key is set, so the experience can still be tried without
+// one. It fakes "understanding" with plain rules: pulls out direction / 文別 /
+// date / agency words, treats what's left as the topic, and scores documents
+// by character-bigram overlap.
+async function runMockSearch(query, history){
+  await new Promise(r => setTimeout(r, 700 + Math.random() * 600));
+  return mockAiSearch(query, history);
+}
+
+const MOCK_DOC_TYPES = ["開會通知單", "書函", "公告", "簽", "函", "令", "呈", "咨"];
+const MOCK_STOPWORDS = ["有關於", "相關的", "有關的", "有沒有", "關於", "有關", "相關", "公文", "文件", "我想", "我要", "幫我",
+  "查詢", "哪些", "只要", "只看", "還有", "所有", "全部", "一下", "更多", "聚焦", "那些", "的", "跟", "和", "與", "嗎", "呢", "那", "請", "找", "查", "看"];
+
+function isoDate(d){ return d.toLocaleDateString("sv-SE"); }
+
+function mockInterpret(query){
+  let rest = query;
+  const cut = (word) => { rest = rest.split(word).join(" "); };
+  const interp = { direction: null, docTypes: [], agencies: [], dateFrom: null, dateTo: null, topic: "" };
+
+  if (/收文|收到|來文/.test(query)) interp.direction = "received";
+  else if (/發文|發出|發給/.test(query)) interp.direction = "sent";
+  else if (/局內|內部|簽呈/.test(query)) interp.direction = "internal";
+  ["收文", "收到", "來文", "發文", "發出去", "發出", "發給", "局內", "內部", "簽呈"].forEach(cut);
+
+  if (/會議通知|開會通知/.test(rest)) interp.docTypes.push("開會通知單");
+  ["開會通知單", "開會通知", "會議通知"].forEach(cut);
+  for (const t of MOCK_DOC_TYPES) {
+    if (t !== "開會通知單" && rest.includes(t)) { interp.docTypes.push(t); cut(t); }
+  }
+
+  const now = new Date();
+  const y = now.getFullYear();
+  const roc = query.match(/(1\d{2})\s*年/);
+  if (roc) {
+    const gy = parseInt(roc[1], 10) + 1911;
+    interp.dateFrom = `${gy}-01-01`; interp.dateTo = `${gy}-12-31`; cut(roc[0]);
+  } else if (/今年/.test(query)) {
+    interp.dateFrom = `${y}-01-01`; interp.dateTo = isoDate(now);
+  } else if (/去年/.test(query)) {
+    interp.dateFrom = `${y - 1}-01-01`; interp.dateTo = `${y - 1}-12-31`;
+  } else if (/上個月/.test(query)) {
+    interp.dateFrom = isoDate(new Date(y, now.getMonth() - 1, 1));
+    interp.dateTo = isoDate(new Date(y, now.getMonth(), 0));
+  } else if (/這個月|本月/.test(query)) {
+    interp.dateFrom = isoDate(new Date(y, now.getMonth(), 1)); interp.dateTo = isoDate(now);
+  } else if (/最近|近期/.test(query)) {
+    interp.dateFrom = isoDate(new Date(now.getTime() - 90 * 86400000)); interp.dateTo = isoDate(now);
+  }
+  ["今年", "去年", "上個月", "這個月", "本月", "最近", "近期"].forEach(cut);
+
+  const agencies = Array.from(new Set(records.map(r => r.meta && r.meta.agency).filter(Boolean)));
+  // People say "工務局" or "國教科", not the full 機關全銜 — so also try the
+  // name with the city government prefix dropped, and just its last unit.
+  for (const a of agencies.sort((x, y) => y.length - x.length)) {
+    if (rest.includes(a)) { interp.agencies.push(a); cut(a); continue; }
+    const shorts = [a.replace(/^.*?[市縣]政府/, ""), a.replace(/^.*[局處府](?=.)/, "")]
+      .filter(s => s.length >= 2 && s !== a);
+    const hit = shorts.find(s => rest.includes(s));
+    if (hit) { interp.agencies.push(a); cut(hit); }
+  }
+
+  MOCK_STOPWORDS.forEach(cut);
+  rest = rest.replace(/[「」『』，,。、？?！!：:\s]+/g, " ");
+  const runs = rest.split(" ").map(s => s.trim()).filter(s => s.length >= 2);
+  interp.topic = runs.join("、");
+  return { interp, runs };
+}
+
+// Contiguous stretches of a topic run whose bigrams all occur in `text` —
+// turns "校園安全" into the readable term that actually matched, rather than
+// reporting a scatter of bigrams.
+function mockMatchedTerms(runs, text){
+  const terms = [];
+  for (const run of runs) {
+    let cur = "";
+    for (let i = 0; i < run.length - 1; i++) {
+      const bg = run.slice(i, i + 2);
+      if (text.includes(bg)) cur = cur ? cur + run[i + 1] : bg;
+      else { if (cur) terms.push(cur); cur = ""; }
+    }
+    if (cur) terms.push(cur);
+  }
+  return Array.from(new Set(terms));
+}
+
+// Keyword candidates are short noun phrases ending in a word 公文 subjects
+// typically hinge on (…工程, …基準, …照顧班), which reads far more like a
+// real keyword than chopping the subject line at punctuation.
+const MOCK_KW_RE = /[一-鿿]{1,4}?(?:計畫書|計畫|工程|基準|草案|調查表|設備|收費|補助|驗收|修繕|會議|活動|研習|體育場|照顧班|教育班|督導|任免|施政|運動大會|接管)/g;
+const MOCK_KW_LEAD_RE = /^(?:有關|為|辦理|檢送|復|本府|本局|本校|貴局|請|之|及|與|並|將|於|乙|的)+/;
+
+function mockKeywords(docs, runs){
+  const counts = new Map();
+  for (const r of docs) {
+    const subject = (r.meta.subject || "").replace(/\s+/g, "");
+    const terms = new Set((subject.match(MOCK_KW_RE) || [])
+      .map(s => s.replace(MOCK_KW_LEAD_RE, "")).filter(s => s.length >= 2));
+    terms.forEach(c => counts.set(c, (counts.get(c) || 0) + 1));
+  }
+  return [...counts.entries()]
+    .filter(([c]) => !runs.some(run => run.includes(c) || c.includes(run)))
+    .sort((a, b) => b[1] - a[1] || Math.abs(a[0].length - 4) - Math.abs(b[0].length - 4))
+    .slice(0, 5)
+    .map(([c]) => c);
+}
+
+function mockAiSearch(query, history){
+  const prev = history.length ? history[history.length - 1].response.interpretation : null;
+  const { interp, runs: newRuns } = mockInterpret(query);
+  // A follow-up keeps whatever the earlier turns established unless it says
+  // something new about that same aspect ("那去年的呢" only swaps the date).
+  let runs = newRuns;
+  if (prev) {
+    if (!interp.direction) interp.direction = prev.direction;
+    if (!interp.docTypes.length) interp.docTypes = prev.docTypes || [];
+    if (!interp.agencies.length) interp.agencies = prev.agencies || [];
+    if (!interp.dateFrom && !interp.dateTo) { interp.dateFrom = prev.dateFrom; interp.dateTo = prev.dateTo; }
+    if (!runs.length && prev.topic) { interp.topic = prev.topic; runs = prev.topic.split("、"); }
+  }
+
+  const bigramCount = runs.reduce((n, run) => n + Math.max(run.length - 1, 0), 0);
+  const from = interp.dateFrom ? new Date(interp.dateFrom + "T00:00:00") : null;
+  const to = interp.dateTo ? new Date(interp.dateTo + "T23:59:59") : null;
+  const candidates = records.filter(r => r.status === "done").filter(r => {
+    if (interp.direction && classifyDirection(r.meta) !== interp.direction) return false;
+    if (interp.docTypes.length && !interp.docTypes.includes(r.meta.docType)) return false;
+    if (interp.agencies.length && !interp.agencies.includes(r.meta.agency)) return false;
+    if (from || to) {
+      const d = parseRocDateToDate(r.meta.docDate);
+      if (!d || (from && d < from) || (to && d > to)) return false;
+    }
+    return true;
+  });
+
+  let scored = candidates.map(r => {
+    if (!bigramCount) return { r, score: 1, field: null, terms: [] };
+    const fields = [["主旨", r.meta.subject || "", 3], ["說明", r.meta.explanation || "", 1.5], ["全文", r.ocrText || "", 0.5]];
+    let score = 0;
+    for (const run of runs) for (let i = 0; i < run.length - 1; i++) {
+      const bg = run.slice(i, i + 2);
+      const f = fields.find(([, text]) => text.includes(bg));
+      if (f) score += f[2];
+    }
+    const best = fields.map(([name, text]) => ({ name, terms: mockMatchedTerms(runs, text) })).find(f => f.terms.length);
+    return { r, score: score / (bigramCount * 3), field: best ? best.name : null, terms: best ? best.terms : [] };
+  }).filter(x => x.score > 0);
+
+  if (bigramCount) {
+    const max = Math.max(0, ...scored.map(x => x.score));
+    scored = scored.filter(x => x.score >= max * 0.25).sort((a, b) => b.score - a.score);
+  } else {
+    scored.sort((a, b) => (parseRocDateToDate(b.r.meta.docDate) || 0) - (parseRocDateToDate(a.r.meta.docDate) || 0));
+  }
+  scored = scored.slice(0, 12);
+  const max = Math.max(0, ...scored.map(x => x.score));
+
+  const conditionText = formatInterpretationChips({ ...interp, topic: "" }).join("、");
+  const results = scored.map(x => ({
+    id: x.r.id,
+    score: Math.round(Math.min(x.score, 1) * 100) / 100,
+    relevance: !bigramCount || x.score >= max * 0.6 ? "high" : "medium",
+    // The hard conditions already show in the "AI 的理解" row, so a reason
+    // only restates them when there's no topic match to point at instead.
+    reason: x.field
+      ? `${x.field === "全文" ? "全文內容" : x.field + "中"}提到「${x.terms.join("」「")}」`
+      : `符合${conditionText || "搜尋條件"}`,
+  }));
+
+  const docs = scored.map(x => x.r);
+  return {
+    summary: mockSummary(docs, interp, !!prev),
+    keywords: docs.length ? mockKeywords(docs, runs) : [],
+    interpretation: interp,
+    results,
+  };
+}
+
+function mockSummary(docs, interp, isFollowUp){
+  if (!docs.length) {
+    return `${isFollowUp ? "照這個追問調整條件後，" : ""}沒有找到符合的公文。可以換個說法、放寬時間範圍，或按「重新開始對話」從頭問。`;
+  }
+  const parts = [`${isFollowUp ? "照你的追問調整條件後，" : ""}找到 ${docs.length} 份${interp.topic ? `與「${interp.topic}」` : ""}相關的公文。`];
+  const dirCounts = {};
+  docs.forEach(r => { const d = classifyDirection(r.meta); dirCounts[d] = (dirCounts[d] || 0) + 1; });
+  const dirKeys = Object.keys(dirCounts);
+  if (dirKeys.length > 1) parts.push(`其中${dirKeys.map(d => `${DIRECTION_LABEL[d]} ${dirCounts[d]} 份`).join("、")}。`);
+  const dated = docs.map(r => [r, parseRocDateToDate(r.meta.docDate)]).filter(([, d]) => d).sort((a, b) => a[1] - b[1]);
+  if (dated.length >= 2) {
+    parts.push(`發文日期從 ${formatRocDate(dated[0][0].meta.docDate)} 到 ${formatRocDate(dated[dated.length - 1][0].meta.docDate)}。`);
+  }
+  const agencyCounts = {};
+  docs.forEach(r => { if (r.meta.agency) agencyCounts[r.meta.agency] = (agencyCounts[r.meta.agency] || 0) + 1; });
+  const topAgency = Object.entries(agencyCounts).sort((a, b) => b[1] - a[1])[0];
+  if (topAgency && topAgency[1] >= 2 && !interp.agencies.length) parts.push(`多數來自${topAgency[0]}（${topAgency[1]} 份）。`);
+  if (docs[0].meta.subject) parts.push(`最相關的是〈${docs[0].meta.subject}〉。`);
+  return parts.join("");
+}
+
+// --- AI 搜尋: wiring ---------------------------------------------------------
+const aiInputEl = document.getElementById("aiInput");
+aiInputEl.addEventListener("keydown", (e) => {
+  // Enter also confirms a Chinese IME candidate — only send once the
+  // composition is finished, or picking a word would fire off the query.
+  if (e.key !== "Enter" || e.isComposing || e.keyCode === 229) return;
+  e.preventDefault();
+  sendAiQuery(aiInputEl.value);
+});
+document.getElementById("aiSendBtn").addEventListener("click", () => sendAiQuery(aiInputEl.value));
+document.getElementById("aiResetBtn").addEventListener("click", () => {
+  if (aiBusy()) return;
+  aiConversation = [];
+  selectedIds.clear();
+  renderAiThread();
+  renderTable();
+  aiInputEl.focus();
+});
+document.getElementById("aiExamples").addEventListener("click", (e) => {
+  const example = e.target.closest("[data-ai-example]");
+  if (example) sendAiQuery(example.dataset.aiExample);
+});
+document.getElementById("aiThread").addEventListener("click", (e) => {
+  const kw = e.target.closest("[data-ai-kw]");
+  if (kw) return sendAiQuery(`更多關於「${kw.dataset.aiKw}」的公文`);
+  const kwManual = e.target.closest("[data-ai-kw-manual]");
+  if (kwManual) return searchKeywordManually(kwManual.dataset.aiKwManual);
+});
+document.getElementById("aiInterpRow").addEventListener("click", (e) => {
+  if (!e.target.closest("#aiApplyManualBtn")) return;
+  const turn = latestAnsweredAiTurn();
+  if (turn) applyInterpretationToManual(turn.response.interpretation);
+});
+
+// A Claude answer can take a while — a running seconds count shows it's
+// still working rather than stuck.
+setInterval(() => {
+  document.querySelectorAll(".ai-elapsed[data-started]").forEach(el => {
+    el.textContent = `${Math.floor((Date.now() - Number(el.dataset.started)) / 1000)} 秒`;
+  });
+}, 1000);
+
+// --- AI 設定 dialog wiring ------------------------------------------------------
+document.getElementById("aiSettingsBtn").addEventListener("click", openAiSettings);
+document.getElementById("aiFootnoteText").addEventListener("click", (e) => {
+  if (e.target.closest("[data-open-ai-settings]")) openAiSettings();
+});
+document.getElementById("aiKeyToggleBtn").addEventListener("click", (e) => {
+  const input = document.getElementById("aiKeyInput");
+  const show = input.type === "password";
+  input.type = show ? "text" : "password";
+  e.currentTarget.textContent = show ? "隱藏" : "顯示";
+});
+document.getElementById("aiSettingsSaveBtn").addEventListener("click", () => {
+  saveAiSettings({
+    apiKey: document.getElementById("aiKeyInput").value.trim(),
+    model: document.getElementById("aiModelSelect").value,
+  });
+  closeAiSettings();
+  renderAiFootnote();
+});
+document.getElementById("aiKeyClearBtn").addEventListener("click", () => {
+  if (!confirm("確定要清除這個瀏覽器裡儲存的 API 金鑰嗎？清除後 AI 搜尋會改回示範回覆。")) return;
+  saveAiSettings({ apiKey: "", model: document.getElementById("aiModelSelect").value });
+  closeAiSettings();
+  renderAiFootnote();
+});
+document.getElementById("aiSettingsCancelBtn").addEventListener("click", closeAiSettings);
+document.getElementById("aiSettingsCloseBtn").addEventListener("click", closeAiSettings);
+document.getElementById("aiSettingsOverlay").addEventListener("click", (e) => {
+  if (e.target.id === "aiSettingsOverlay") closeAiSettings();
+});
+document.getElementById("aiKeyInput").addEventListener("keydown", (e) => {
+  if (e.key === "Enter" && !e.isComposing) document.getElementById("aiSettingsSaveBtn").click();
+});
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape" && document.getElementById("aiSettingsOverlay").classList.contains("show")) closeAiSettings();
+});
+renderAiFootnote();
+
 // --- 匯入公文資料 dialog ----------------------------------------------------
 document.getElementById("openImportBtn").addEventListener("click", () => {
   document.getElementById("importOverlay").classList.add("show");
@@ -1534,7 +2558,7 @@ dropzone.addEventListener("drop", (e) => {
       await Promise.all(reparsed.map(r => dbPut(r)));
     }
   } catch (e) { console.warn("IndexedDB unavailable", e); }
-  renderTable();
+  setSearchMode(searchMode);
 })();
 </script>
 </body>
