@@ -776,7 +776,9 @@
 <script>
 pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
 
-const DB_NAME = "gov-doc-ocr";
+// Named after this project, so its document list never mixes with another
+// tool's that happens to run from the same browser origin (e.g. file://).
+const DB_NAME = "gov-doc-ai-search";
 const STORE = "documents";
 
 function openDB(){
